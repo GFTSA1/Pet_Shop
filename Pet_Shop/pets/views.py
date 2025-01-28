@@ -49,10 +49,10 @@ class OrdersList(generics.CreateAPIView):
 class OrderDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Orders.objects.all()
     serializer_class = OrdersSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwner, permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
 
     def perform_update(self, serializer):
-        serializer.save(user_id=self.request.user.id)
+        serializer.save(user_id=self.request.user)
 
 
 class CustomAPIToken(TokenObtainPairView):

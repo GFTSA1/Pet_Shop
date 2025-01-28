@@ -60,9 +60,20 @@ class OrdersSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         items_data = validated_data.pop('items')
-        items = instance.items
         instance.status = validated_data.get('status', instance.status)
+        instance.save()
 
+        existing_items = {item.item_id: item for item in ItemsOrders.objects.filter(order_id_id=instance.id)}
+
+        for item_data in items_data:
+            item_id = item_data.get('item_id')
+            if item_id in existing_items:
+                existing_item = existing_items[item_id]
+                existing_item.quantity = item_data.get('quantity', existing_item.quantity)
+                existing_item.save()
+            # else:
+            #     ItemsOrders.objects.create(order_id=instance, **item_data)
+        return instance
 
     class Meta:
         model = Orders
