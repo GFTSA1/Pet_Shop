@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pets', '0002_alter_users_managers_remove_users_username'),
+        ("pets", "0002_alter_users_managers_remove_users_username"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='users',
-            name='password',
-            field=models.CharField(max_length=128, verbose_name='password'),
+            model_name="users",
+            name="password",
+            field=models.CharField(max_length=128, verbose_name="password"),
         ),
     ]
