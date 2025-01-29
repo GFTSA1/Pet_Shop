@@ -49,6 +49,7 @@ class FavouriteItemsSerializer(serializers.ModelSerializer):
 
 
 class OrdersItemSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = ItemsOrders
         fields = ["item_id", "quantity"]
@@ -57,7 +58,6 @@ class OrdersItemSerializer(serializers.ModelSerializer):
 class OrdersSerializer(serializers.ModelSerializer):
     items = OrdersItemSerializer(many=True, write_only=True)
     user_id = serializers.ReadOnlyField(source="user.id")
-    delete_flag = serializers.ReadOnlyField(required=False)
 
     def create(self, validated_data):
         items_data = validated_data.pop("items")
@@ -79,10 +79,9 @@ class OrdersSerializer(serializers.ModelSerializer):
 
             for item_data in items_data:
                 item_id = item_data.get("item_id")
-                delete_flag = item_data.get("delete_flag")
 
                 if item_id in existing_items:
-                    if delete_flag:
+                    if item_data.get("quantity") == 0:
                         existing_items[item_id].delete()
                     else:
                         existing_item = existing_items[item_id]
@@ -91,7 +90,7 @@ class OrdersSerializer(serializers.ModelSerializer):
                         )
                         existing_item.save()
                 else:
-                    if not delete_flag:
+                    if not (item_data.get("quantity") == 0):
                         ItemsOrders.objects.create(order_id=instance, **item_data)
             return instance
 

@@ -57,5 +57,5 @@ class FavouriteItems(models.Model):
 
 class ItemsOrders(models.Model):
     item_id = models.ForeignKey("pets.Items", on_delete=models.DO_NOTHING)
-    order_id = models.ForeignKey("pets.Orders", on_delete=models.DO_NOTHING)
+    order_id = models.ForeignKey("pets.Orders", on_delete=models.CASCADE)
     quantity = models.IntegerField()
