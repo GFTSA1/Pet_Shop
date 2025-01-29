@@ -31,10 +31,6 @@ class UsersSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         password = validated_data.pop("password")
-        if 'first_name' not in validated_data or not validated_data['first_name']:
-            email = validated_data['email']
-            first_name = email.split('@')[0]
-            validated_data['first_name'] = first_name
         user = Users.objects.create(**validated_data)
         if password:
             user.set_password(password)
@@ -43,7 +39,7 @@ class UsersSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Users
-        fields = ["id", "email", "created_at", 'first_name', 'password']
+        fields = ["id", "email", "created_at", "password"]
 
 
 class FavouriteItemsSerializer(serializers.ModelSerializer):

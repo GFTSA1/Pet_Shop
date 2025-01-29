@@ -31,7 +31,6 @@ class Users(AbstractUser):
     username = None
     logo = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now_add=True)
-    first_name = models.CharField(max_length=150, blank=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
