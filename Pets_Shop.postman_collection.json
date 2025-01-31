@@ -79,6 +79,16 @@
 				{
 					"name": "Update a user email",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JWT}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PATCH",
 						"header": [],
 						"body": {
@@ -86,18 +96,75 @@
 							"formdata": [
 								{
 									"key": "email",
-									"value": "neyeban@gmail.com",
+									"value": "tank@gmail.com",
 									"type": "text"
 								}
 							]
 						},
 						"url": {
-							"raw": "{{URL}}users/3/",
+							"raw": "{{URL}}users/11/",
 							"host": [
 								"{{URL}}users"
 							],
 							"path": [
-								"3",
+								"11",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete an User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}users/12/",
+							"host": [
+								"{{URL}}users"
+							],
+							"path": [
+								"12",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All Orders of user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}users/10/orders/",
+							"host": [
+								"{{URL}}users"
+							],
+							"path": [
+								"10",
+								"orders",
 								""
 							]
 						}
@@ -153,12 +220,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{URL}}orders/10/",
+							"raw": "{{URL}}orders/13/",
 							"host": [
 								"{{URL}}orders"
 							],
 							"path": [
-								"10",
+								"13",
 								""
 							]
 						}
@@ -182,7 +249,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"items\": [\n    {\n      \"item_id\": 1,\n      \"quantity\": 2\n    },\n    {\n      \"item_id\": 2,\n      \"quantity\": 5\n    }\n  ]\n}",
+							"raw": "{\n  \"items\": [\n    {\n      \"item_id\": 1,\n      \"quantity\": 2\n    }\n  ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -218,7 +285,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"items\":[\n        {\n            \"item_id\": 1,\n            \"quantity\": 3\n        }\n    ]\n}",
+							"raw": "{\n    \"items\":\n            [\n                {\n                    \"item_id\": 2,\n                    \"quantity\": 24\n                }\n            ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -226,12 +293,40 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}orders/10/",
+							"raw": "{{URL}}orders/13/",
 							"host": [
 								"{{URL}}orders"
 							],
 							"path": [
-								"10",
+								"13",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}orders/15/",
+							"host": [
+								"{{URL}}orders"
+							],
+							"path": [
+								"15",
 								""
 							]
 						}
@@ -265,7 +360,7 @@
 							"formdata": [
 								{
 									"key": "email",
-									"value": "tank@gmail.com",
+									"value": "ta@gmail.com",
 									"type": "text"
 								},
 								{
@@ -297,12 +392,17 @@
 							"formdata": [
 								{
 									"key": "email",
-									"value": "tank@gmail.com",
+									"value": "tankyra@gmail.com",
 									"type": "text"
 								},
 								{
 									"key": "password",
 									"value": "1234",
+									"type": "text"
+								},
+								{
+									"key": "first_name",
+									"value": "Yap",
 									"type": "text"
 								}
 							]

@@ -2,9 +2,9 @@ from rest_framework import generics, permissions
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .models import Items, Users, Orders
+from .models import Items, Users, Orders, ItemsOrders
 from .permissions import IsThisUser, IsOwner
-from .serializers import ItemsSerializer, UsersSerializer, OrdersSerializer
+from .serializers import ItemsSerializer, UsersSerializer, OrdersSerializer, AllOrdersOfUser
 
 
 class ItemsList(generics.ListCreateAPIView):
@@ -58,6 +58,14 @@ class OrderDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def perform_update(self, serializer):
         serializer.save(user_id=self.request.user)
+
+
+class AllOrdersOfUser(generics.ListAPIView):
+    serializer_class = AllOrdersOfUser
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
+
+    def get_queryset(self):
+        return Orders.objects.filter(user_id=self.request.user)
 
 
 class CustomAPIToken(TokenObtainPairView):

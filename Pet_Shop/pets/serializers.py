@@ -1,8 +1,4 @@
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import (
-    TokenObtainSerializer,
-    TokenObtainPairSerializer,
-)
 
 from Pet_Shop.pets.models import (
     Items,
@@ -102,3 +98,25 @@ class OrdersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Orders
         fields = "__all__"
+
+
+class ItemForUserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Items
+        fields = ['id', 'title']
+
+class HelperUserOrderSerializer(serializers.ModelSerializer):
+    item = ItemForUserSerializer(read_only=True, source="item_id")
+
+    class Meta:
+        model = ItemsOrders
+        fields = ['item', 'quantity']
+
+
+class AllOrdersOfUser(serializers.ModelSerializer):
+    item_id = HelperUserOrderSerializer(many=True, read_only=True, source='itemsorders_set')
+
+    class Meta:
+        model = Orders
+        fields = ['id', 'status', 'created_at', 'item_id']
