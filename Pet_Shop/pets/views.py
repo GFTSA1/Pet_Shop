@@ -16,7 +16,7 @@ class ItemsList(generics.ListCreateAPIView):
 class ItemDetail(generics.RetrieveAPIView):
     queryset = Items.objects.all()
     serializer_class = ItemsSerializer
-    permission_classes = [permissions.IsAuthenticated]
+
 
 
 class UsersList(generics.ListAPIView):
@@ -48,13 +48,19 @@ class OrdersList(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        serializer.save(user_id=self.request.user)
+        serializer.save(user_id=self.request.user, status='Pending')
 
 
-class OrderDetail(generics.RetrieveUpdateDestroyAPIView):
+class OrderDetail(generics.RetrieveDestroyAPIView):
     queryset = Orders.objects.all()
     serializer_class = OrdersSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwner]
+
+
+class OrderUpdate(generics.RetrieveUpdateAPIView):
+    queryset = Orders.objects.all()
+    serializer_class = OrdersSerializer
+    permission_classes = [permissions.IsAdminUser]
 
     def perform_update(self, serializer):
         serializer.save(user_id=self.request.user)
