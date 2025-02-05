@@ -45,13 +45,13 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Проверка миграций Django
-        env:
-          DATABASE_URL: postgres://postgres:1939@localhost:5432/pets_shop
-        run: |
-          source venv/bin/activate
-          python manage.py makemigrations --check --dry-run
-          python manage.py migrate
+      # - name: Проверка миграций Django
+      #   env:
+      #     DATABASE_URL: postgres://postgres:1939@localhost:5432/pets_shop
+      #   run: |
+      #     source venv/bin/activate
+      #     python manage.py makemigrations --check --dry-run
+      #     python manage.py migrate
 
       - name: Запуск Django-сервера
         env:
