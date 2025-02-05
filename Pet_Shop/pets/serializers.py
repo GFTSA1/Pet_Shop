@@ -54,6 +54,7 @@ class OrdersItemSerializer(serializers.ModelSerializer):
 class OrdersSerializer(serializers.ModelSerializer):
     items = OrdersItemSerializer(many=True, write_only=True)
     user_id = serializers.ReadOnlyField(source="user.id")
+    status = serializers.ChoiceField(choices=Orders.choices_for_order, default='Pending')
 
     def create(self, validated_data):
         items_data = validated_data.pop("items")

@@ -25,5 +25,6 @@ urlpatterns = [
        path('register/', UserListRegister.as_view()),
        path('', include('Pet_Shop.pets.urls')),
        path('admin/', admin.site.urls),
+
 ]
 
