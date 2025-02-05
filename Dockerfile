@@ -14,4 +14,4 @@ ENV DATABASE_PASSWORD=1939
 ENV DATABASE_HOST=db
 ENV DATABASE_PORT=5432
 
-CMD ["gunicorn", "project.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "Pet_Shop.wsgi:application", "--bind", "0.0.0.0:8000"]
