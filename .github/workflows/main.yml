@@ -1,0 +1,61 @@
+name: Django CI
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_DB: pets_shop
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 1939
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout репозитория
+        uses: actions/checkout@v3
+
+      - name: Установка Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Установка зависимостей
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Проверка миграций Django
+        env:
+          DATABASE_URL: postgres://postgres:1939@localhost:5432/pets_shop
+        run: |
+          source venv/bin/activate
+          python manage.py makemigrations --check --dry-run
+          python manage.py migrate
+
+      - name: Запуск Django-сервера
+        env:
+          DATABASE_URL: postgres://postgres:1939@localhost:5432/pets_shop
+        run: |
+          source venv/bin/activate
+          python manage.py runserver & sleep 10
