@@ -1,4 +1,4 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions,filters
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -6,7 +6,10 @@ from .models import Items, Users, Orders, ItemsOrders
 from .permissions import IsThisUser, IsOwner
 from .serializers import ItemsSerializer, UsersSerializer, OrdersSerializer, AllOrdersOfUser
 
-
+from .models import Product
+from .serializers import ProductSerializer
+import django_filters
+from django_filters.rest_framework import DjangoFilterBackend
 class ItemsList(generics.ListCreateAPIView):
     queryset = Items.objects.all()
     serializer_class = ItemsSerializer
@@ -76,3 +79,20 @@ class AllOrdersOfUser(generics.ListAPIView):
 
 class CustomAPIToken(TokenObtainPairView):
     serializer_class = TokenObtainPairSerializer
+
+
+
+class ProductFilter(django_filters.FilterSet):
+    search = django_filters.CharFilter(field_name='name', lookup_expr='icontains', label='Search')
+    min_price = django_filters.NumberFilter(field_name='price', lookup_expr='gte', label='Min price')
+    max_price = django_filters.NumberFilter(field_name='price', lookup_expr='lte', label='Max price')
+
+    class Meta:
+        model = Product
+        fields = ['search', 'min_price', 'max_price']
+
+class ProductListView(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend, filters.OrderingFilter)
+    filterset_fields = ['name', 'price']

@@ -121,3 +121,12 @@ class AllOrdersOfUser(serializers.ModelSerializer):
     class Meta:
         model = Orders
         fields = ['id', 'status', 'created_at', 'item_id']
+
+
+from rest_framework import serializers
+from .models import Product
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'price', 'created_at']
