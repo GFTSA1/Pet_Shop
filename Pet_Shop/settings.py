@@ -29,7 +29,7 @@ ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost',]
 # Application definition
 
 INSTALLED_APPS = [
-    'django_filters',
+    # 'django_filters',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',

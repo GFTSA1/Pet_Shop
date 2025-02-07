@@ -9,7 +9,7 @@ from .serializers import ItemsSerializer, UsersSerializer, OrdersSerializer, All
 from .models import Product
 from .serializers import ProductSerializer
 import django_filters
-from django_filters.rest_framework import DjangoFilterBackend
+# from django_filters.rest_framework import DjangoFilterBackend
 class ItemsList(generics.ListCreateAPIView):
     queryset = Items.objects.all()
     serializer_class = ItemsSerializer

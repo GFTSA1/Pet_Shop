@@ -1,4 +1,3 @@
-
 services:
   db:
     image: postgres:15
@@ -23,6 +22,8 @@ services:
       DATABASE_PORT: 5432
     ports:
       - "8000:8000"
+    command: [ "gunicorn", "Pet_Shop.wsgi:application", "--bind", "0.0.0.0:8000" ]
+
 
 volumes:
   postgres_data:
