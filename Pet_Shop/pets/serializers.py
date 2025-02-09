@@ -1,5 +1,5 @@
 from rest_framework import serializers
-
+from .models import Product
 from Pet_Shop.pets.models import (
     Items,
     Users,
@@ -123,8 +123,7 @@ class AllOrdersOfUser(serializers.ModelSerializer):
         fields = ['id', 'status', 'created_at', 'item_id']
 
 
-from rest_framework import serializers
-from .models import Product
+
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
