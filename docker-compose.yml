@@ -1,3 +1,4 @@
+
 services:
   db:
     image: postgres:15
@@ -20,10 +21,10 @@ services:
       DATABASE_PASSWORD: 1939
       DATABASE_HOST: db
       DATABASE_PORT: 5432
+      USE_SQLITE: "false"  # Если "true", то используется SQLite
     ports:
       - "8000:8000"
-    command: [ "gunicorn", "Pet_Shop.wsgi:application", "--bind", "0.0.0.0:8000" ]
-
+    command: ["gunicorn", "Pet_Shop.wsgi:application", "--bind", "0.0.0.0:8000"]
 
 volumes:
   postgres_data:

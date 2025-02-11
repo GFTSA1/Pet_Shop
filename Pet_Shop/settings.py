@@ -9,11 +9,33 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+USE_SQLITE = os.getenv("USE_SQLITE", "false").lower() == "true"
+
+if USE_SQLITE:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv("DATABASE_NAME", "pets_shop"),
+            'USER': os.getenv("DATABASE_USER", "postgres"),
+            'PASSWORD': os.getenv("DATABASE_PASSWORD", "1939"),
+            'HOST': os.getenv("DATABASE_HOST", "db"),
+            'PORT': os.getenv("DATABASE_PORT", "5432"),
+        }
+    }
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -85,12 +107,12 @@ WSGI_APPLICATION = 'Pet_Shop.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'pets_shop',
-        'USER': 'postgres',
-        'PASSWORD': '1939',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3' if not os.getenv('DATABASE_NAME') else 'django.db.backends.postgresql',
+        'NAME': os.getenv('DATABASE_NAME', os.path.join(os.path.dirname(__file__), 'db.sqlite3')),
+        'USER': os.getenv('DATABASE_USER', ''),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD', ''),
+        'HOST': os.getenv('DATABASE_HOST', ''),
+        'PORT': os.getenv('DATABASE_PORT', ''),
     }
 }
 AUTH_USER_MODEL = 'pets.Users'
