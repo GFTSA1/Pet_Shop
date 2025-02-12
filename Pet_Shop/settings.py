@@ -19,21 +19,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 USE_SQLITE = os.getenv("USE_SQLITE", "false").lower() == "true"
 
 if USE_SQLITE:
+    print("Using SQLite database")
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
 else:
+    print("Using PostgreSQL database")
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv("DATABASE_NAME", "pets_shop"),
-            'USER': os.getenv("DATABASE_USER", "postgres"),
-            'PASSWORD': os.getenv("DATABASE_PASSWORD", "1939"),
-            'HOST': os.getenv("DATABASE_HOST", "db"),
-            'PORT': os.getenv("DATABASE_PORT", "5432"),
+            'NAME': os.getenv("DATABASE_NAME"),
+            'USER': os.getenv("DATABASE_USER"),
+            'PASSWORD': os.getenv("DATABASE_PASSWORD"),
+            'HOST': os.getenv("DATABASE_HOST"),
+            'PORT': os.getenv("DATABASE_PORT"),
         }
     }
 

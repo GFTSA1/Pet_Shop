@@ -49,7 +49,7 @@ class Orders(models.Model):
         'Completed': 'Completed',
         'Canceled': 'Canceled',
     }
-    status = models.CharField(choices=choices_for_order)
+    status = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     user_id = models.ForeignKey("pets.Users", on_delete=models.DO_NOTHING)
 
