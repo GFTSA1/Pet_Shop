@@ -7,7 +7,7 @@ from .permissions import IsThisUser, IsOwner
 from .serializers import ItemsSerializer, UsersSerializer, OrdersSerializer, AllOrdersOfUser
 
 
-class ItemsList(generics.ListAPIView):
+class ItemsList(generics.ListCreateAPIView):
     queryset = Items.objects.all()
     serializer_class = ItemsSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
