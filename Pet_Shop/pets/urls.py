@@ -4,8 +4,7 @@ from . import views
 from drf_spectacular.views import SpectacularSwaggerView, SpectacularAPIView
 
 urlpatterns = [
-    path("items/", views.ItemsList.as_view()),
-    path("items/create/", views.ProductCreateView.as_view()),
+    path("items/", views.ItemView.as_view()),
     path("items/<int:pk>/", views.ItemDetail.as_view()),
     path("users/", views.UsersList.as_view()),
     path("users/<int:pk>/", views.UserDetail.as_view()),

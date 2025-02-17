@@ -1,4 +1,4 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, mixins
 from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -14,27 +14,32 @@ from .serializers import (
 )
 
 
-class ItemsList(generics.ListAPIView):
+class ItemView(
+    generics.GenericAPIView,
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+):
     queryset = Items.objects.all()
     serializer_class = ItemsSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [permissions.IsAdminUser()]
+        return [permissions.IsAuthenticatedOrReadOnly()]
 
-class ProductCreateView(generics.CreateAPIView):
-    queryset = Items.objects.all()
-    serializer_class = ItemsSerializer
-    permission_classes = [permissions.IsAdminUser]
+    def get(self, requset, *args, **kwargs):
+        if "pk" in kwargs:
+            return self.retrieve(requset, *args, **kwargs)
+        return self.list(requset, *args, **kwargs)
 
-
-class ItemsCreate(generics.CreateAPIView):
-    queryset = Items.objects.all()
-    serializer_class = ItemsSerializer
-    permission_classes = [permissions.IsAdminUser]
+    def post(self, requset, *args, **kwargs):
+        return self.create(requset, *args, **kwargs)
 
 
 class ItemDetail(generics.RetrieveAPIView):
     queryset = Items.objects.all()
     serializer_class = ItemsSerializer
+
 
 
 class UsersList(generics.ListAPIView):
@@ -80,6 +85,7 @@ class OrderUpdate(generics.RetrieveUpdateAPIView):
     serializer_class = OrdersSerializer
     permission_classes = [permissions.IsAdminUser]
 
+    #TODO: It is a bug, because if admin updates order it will asign it to him.
     def perform_update(self, serializer):
         serializer.save(user_id=self.request.user)
 
