@@ -24,18 +24,22 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class UsersSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    password_confirm = serializers.CharField(write_only=True)
 
     def create(self, validated_data):
         password = validated_data.pop("password")
+        second_password = validated_data.pop("password_confirm")
         user = Users.objects.create(**validated_data)
         if password:
+            if password != second_password:
+                raise serializers.ValidationError('Passwords do not match')
             user.set_password(password)
         user.save()
         return user
 
     class Meta:
         model = Users
-        fields = ["id", "email", "created_at", "password"]
+        fields = ["id", "email", "created_at", "password", 'password_confirm']
 
 
 class FavouriteItemsSerializer(serializers.ModelSerializer):

@@ -109,14 +109,15 @@ WSGI_APPLICATION = 'Pet_Shop.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3' if not os.getenv('DATABASE_NAME') else 'django.db.backends.postgresql',
-        'NAME': os.getenv('DATABASE_NAME', os.path.join(os.path.dirname(__file__), 'db.sqlite3')),
-        'USER': os.getenv('DATABASE_USER', ''),
-        'PASSWORD': os.getenv('DATABASE_PASSWORD', ''),
-        'HOST': os.getenv('DATABASE_HOST', ''),
-        'PORT': os.getenv('DATABASE_PORT', ''),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'pets_shop',
+        'USER': 'postgres',
+        'PASSWORD': '1939',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
+
 AUTH_USER_MODEL = 'pets.Users'
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
