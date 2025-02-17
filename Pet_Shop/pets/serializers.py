@@ -25,21 +25,32 @@ class CategorySerializer(serializers.ModelSerializer):
 class UsersSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     password_confirm = serializers.CharField(write_only=True)
+    first_name = serializers.CharField(required=False)
 
     def create(self, validated_data):
         password = validated_data.pop("password")
         second_password = validated_data.pop("password_confirm")
         user = Users.objects.create(**validated_data)
+        if validated_data.get("first_name") is None:
+            user.first_name = user.email.split("@")[0]
+
         if password:
             if password != second_password:
-                raise serializers.ValidationError('Passwords do not match')
+                raise serializers.ValidationError("Passwords do not match")
             user.set_password(password)
         user.save()
         return user
 
     class Meta:
         model = Users
-        fields = ["id", "email", "created_at", "password", 'password_confirm']
+        fields = [
+            "id",
+            "email",
+            "created_at",
+            "password",
+            "password_confirm",
+            "first_name",
+        ]
 
 
 class FavouriteItemsSerializer(serializers.ModelSerializer):
@@ -49,7 +60,6 @@ class FavouriteItemsSerializer(serializers.ModelSerializer):
 
 
 class OrdersItemSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = ItemsOrders
         fields = ["item_id", "quantity"]
@@ -58,7 +68,9 @@ class OrdersItemSerializer(serializers.ModelSerializer):
 class OrdersSerializer(serializers.ModelSerializer):
     items = OrdersItemSerializer(many=True, write_only=True)
     user_id = serializers.ReadOnlyField(source="user.id")
-    status = serializers.ChoiceField(choices=Orders.choices_for_order, default='Pending')
+    status = serializers.ChoiceField(
+        choices=Orders.choices_for_order, default="Pending"
+    )
 
     def create(self, validated_data):
         items_data = validated_data.pop("items")
@@ -106,30 +118,30 @@ class OrdersSerializer(serializers.ModelSerializer):
 
 
 class ItemForUserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Items
-        fields = ['id', 'title']
+        fields = ["id", "title"]
+
 
 class HelperUserOrderSerializer(serializers.ModelSerializer):
     item = ItemForUserSerializer(read_only=True, source="item_id")
 
     class Meta:
         model = ItemsOrders
-        fields = ['item', 'quantity']
+        fields = ["item", "quantity"]
 
 
 class AllOrdersOfUser(serializers.ModelSerializer):
-    item_id = HelperUserOrderSerializer(many=True, read_only=True, source='itemsorders_set')
+    item_id = HelperUserOrderSerializer(
+        many=True, read_only=True, source="itemsorders_set"
+    )
 
     class Meta:
         model = Orders
-        fields = ['id', 'status', 'created_at', 'item_id']
-
-
+        fields = ["id", "status", "created_at", "item_id"]
 
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'created_at']
+        fields = ["id", "name", "price", "created_at"]

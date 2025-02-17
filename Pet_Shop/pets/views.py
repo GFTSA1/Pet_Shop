@@ -1,10 +1,17 @@
 from rest_framework import generics, permissions
+from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.decorators import api_view
 
 from .models import Items, Users, Orders, ItemsOrders
 from .permissions import IsThisUser, IsOwner
-from .serializers import ItemsSerializer, UsersSerializer, OrdersSerializer, AllOrdersOfUser
+from .serializers import (
+    ItemsSerializer,
+    UsersSerializer,
+    OrdersSerializer,
+    AllOrdersOfUser,
+)
 
 
 class ItemsList(generics.ListAPIView):
@@ -24,10 +31,10 @@ class ItemsCreate(generics.CreateAPIView):
     serializer_class = ItemsSerializer
     permission_classes = [permissions.IsAdminUser]
 
+
 class ItemDetail(generics.RetrieveAPIView):
     queryset = Items.objects.all()
     serializer_class = ItemsSerializer
-
 
 
 class UsersList(generics.ListAPIView):
@@ -59,7 +66,7 @@ class OrdersList(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        serializer.save(user_id=self.request.user, status='Pending')
+        serializer.save(user_id=self.request.user, status="Pending")
 
 
 class OrderDetail(generics.RetrieveDestroyAPIView):
@@ -87,3 +94,13 @@ class AllOrdersOfUser(generics.ListAPIView):
 
 class CustomAPIToken(TokenObtainPairView):
     serializer_class = TokenObtainPairSerializer
+
+
+@api_view(["POST"])
+def check_user_email(request):
+    email = request.data["email"]
+    user = Users.objects.filter(email=email)
+
+    if user.exists():
+        return Response({"User with this email already exists!"})
+    return Response({"Email is good to go"})
