@@ -1,19 +1,37 @@
-from rest_framework import generics, permissions,filters
+from rest_framework import generics, permissions, mixins
+from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.decorators import api_view
 
 from .models import Items, Users, Orders, ItemsOrders
 from .permissions import IsThisUser, IsOwner
-from .serializers import ItemsSerializer, UsersSerializer, OrdersSerializer, AllOrdersOfUser
+from .serializers import (
+    ItemsSerializer,
+    UsersSerializer,
+    OrdersSerializer,
+    AllOrdersOfUser,
+)
 
-from .models import Product
-from .serializers import ProductSerializer
-import django_filters
-# from django_filters.rest_framework import DjangoFilterBackend
-class ItemsList(generics.ListCreateAPIView):
+
+class ItemView(
+    generics.GenericAPIView,
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+):
     queryset = Items.objects.all()
     serializer_class = ItemsSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [permissions.IsAdminUser()]
+        return [permissions.IsAuthenticatedOrReadOnly()]
+
+    def get(self, requset, *args, **kwargs):
+        return self.list(requset, *args, **kwargs)
+
+    def post(self, requset, *args, **kwargs):
+        return self.create(requset, *args, **kwargs)
 
 
 class ItemDetail(generics.RetrieveAPIView):
@@ -51,7 +69,7 @@ class OrdersList(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        serializer.save(user_id=self.request.user, status='Pending')
+        serializer.save(user_id=self.request.user, status="Pending")
 
 
 class OrderDetail(generics.RetrieveDestroyAPIView):
@@ -65,6 +83,7 @@ class OrderUpdate(generics.RetrieveUpdateAPIView):
     serializer_class = OrdersSerializer
     permission_classes = [permissions.IsAdminUser]
 
+    #TODO: It is a bug, because if admin updates order it will asign it to him.
     def perform_update(self, serializer):
         serializer.save(user_id=self.request.user)
 
@@ -81,18 +100,11 @@ class CustomAPIToken(TokenObtainPairView):
     serializer_class = TokenObtainPairSerializer
 
 
+@api_view(["POST"])
+def check_user_email(request):
+    email = request.data["email"]
+    user = Users.objects.filter(email=email)
 
-class ProductFilter(django_filters.FilterSet):
-    search = django_filters.CharFilter(field_name='name', lookup_expr='icontains', label='Search')
-    min_price = django_filters.NumberFilter(field_name='price', lookup_expr='gte', label='Min price')
-    max_price = django_filters.NumberFilter(field_name='price', lookup_expr='lte', label='Max price')
-
-    class Meta:
-        model = Product
-        fields = ['search', 'min_price', 'max_price']
-
-class ProductListView(generics.ListAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-    filter_backends = (django_filters.rest_framework.DjangoFilterBackend, filters.OrderingFilter)
-    filterset_fields = ['name', 'price']
+    if user.exists():
+        return Response({"User with this email already exists!"})
+    return Response({"Email is good to go"})

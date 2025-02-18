@@ -24,6 +24,7 @@ class Items(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        indexes = [models.Index(fields=["title"])]
 
 
 class Users(AbstractUser):
@@ -31,6 +32,7 @@ class Users(AbstractUser):
     username = None
     logo = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now_add=True)
+    first_name = models.CharField(max_length=100, null=True, blank=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -38,16 +40,19 @@ class Users(AbstractUser):
     objects = CustomUserManager()
 
     def __str__(self):
-        return self.email
+        return self.first_name
+
+    class Meta:
+        indexes = [models.Index(fields=["email"])]
 
 
 class Orders(models.Model):
     choices_for_order = {
-        'Pending': 'Pending',
-        'Awaiting': 'Awaiting',
-        'Shipped': 'Shipped',
-        'Completed': 'Completed',
-        'Canceled': 'Canceled',
+        "Pending": "Pending",
+        "Awaiting": "Awaiting",
+        "Shipped": "Shipped",
+        "Completed": "Completed",
+        "Canceled": "Canceled",
     }
     status = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -67,7 +72,9 @@ class ItemsOrders(models.Model):
     order_id = models.ForeignKey("pets.Orders", on_delete=models.CASCADE)
     quantity = models.IntegerField()
 
+
 from django.db import models
+
 
 class Product(models.Model):
     name = models.CharField(max_length=255)

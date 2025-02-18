@@ -5,20 +5,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pets', '0003_alter_users_password'),
+        ("pets", "0003_alter_users_password"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='itemsorders',
-            name='order_id',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='pets.orders'),
+            model_name="itemsorders",
+            name="order_id",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="pets.orders"
+            ),
         ),
         migrations.AlterField(
-            model_name='orders',
-            name='status',
-            field=models.CharField(default='Pending', max_length=100),
+            model_name="orders",
+            name="status",
+            field=models.CharField(default="Pending", max_length=100),
         ),
     ]
