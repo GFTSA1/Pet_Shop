@@ -28,8 +28,6 @@ class ItemView(
         return [permissions.IsAuthenticatedOrReadOnly()]
 
     def get(self, requset, *args, **kwargs):
-        if "pk" in kwargs:
-            return self.retrieve(requset, *args, **kwargs)
         return self.list(requset, *args, **kwargs)
 
     def post(self, requset, *args, **kwargs):
