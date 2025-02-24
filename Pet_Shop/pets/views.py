@@ -1,17 +1,26 @@
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.core.mail import send_mail
+
 from rest_framework import generics, permissions, mixins
 from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.decorators import api_view
 
-from .models import Items, Users, Orders, ItemsOrders
+from .models import Items, Users, Orders, ItemsOrders, PasswordReset
 from .permissions import IsThisUser, IsOwner
 from .serializers import (
     ItemsSerializer,
     UsersSerializer,
     OrdersSerializer,
     AllOrdersOfUser,
+    ResetPasswordSerializer,
+    ActuallyResetPasswordSerializer,
 )
+
+import os
+
+from .. import settings
 
 
 class ItemView(
@@ -37,7 +46,6 @@ class ItemView(
 class ItemDetail(generics.RetrieveAPIView):
     queryset = Items.objects.all()
     serializer_class = ItemsSerializer
-
 
 
 class UsersList(generics.ListAPIView):
@@ -83,7 +91,7 @@ class OrderUpdate(generics.RetrieveUpdateAPIView):
     serializer_class = OrdersSerializer
     permission_classes = [permissions.IsAdminUser]
 
-    #TODO: It is a bug, because if admin updates order it will asign it to him.
+    # TODO: It is a bug, because if admin updates order it will asign it to him.
     def perform_update(self, serializer):
         serializer.save(user_id=self.request.user)
 
@@ -108,3 +116,42 @@ def check_user_email(request):
     if user.exists():
         return Response({"User with this email already exists!"})
     return Response({"Email is good to go"})
+
+
+class RequestPasswordResetEmail(generics.GenericAPIView):
+    serializer_class = ResetPasswordSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        email = request.data["email"]
+
+        user = Users.objects.get(email=email)
+        if user:
+            token_generator = PasswordResetTokenGenerator()
+            token = token_generator.make_token(user)
+            reset = PasswordReset(user=email, reset_code=token)
+            reset.save()
+
+            reset_url = f"{os.environ.get('SITE_DOMAIN')}/{token}"
+
+            send_mail(
+                subject="Password Reset Request",
+                message=f"here is your password reset link: {reset_url}",
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
+            return Response({"Email sent"})
+        else:
+            return Response({"User with this email does not exist!"})
+
+
+class ActuallyResetPassword(generics.CreateAPIView):
+    serializer_class = ActuallyResetPasswordSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"message": "Password reset done!"})

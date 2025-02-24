@@ -83,3 +83,9 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class PasswordReset(models.Model):
+    user = models.EmailField()
+    reset_code = models.CharField(max_length=255, unique=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
