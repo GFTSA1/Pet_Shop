@@ -18,7 +18,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenRefreshView
-from Pet_Shop.pets.views import CustomAPIToken, UserListRegister
+from Pet_Shop.pets.views import CustomAPIToken, UserListRegister, RequestPasswordResetEmail, ActuallyResetPassword
 
 urlpatterns = [
     path("login/", CustomAPIToken.as_view()),
@@ -27,4 +27,6 @@ urlpatterns = [
     path("", include("Pet_Shop.pets.urls")),
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
+    path('reset-password/', RequestPasswordResetEmail.as_view()),
+    path('reset-password-validator/', ActuallyResetPassword.as_view()),
 ]

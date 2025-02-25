@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from .models import Product
 from Pet_Shop.pets.models import (
     Items,
     Users,
@@ -7,6 +6,8 @@ from Pet_Shop.pets.models import (
     Orders,
     FavouriteItems,
     ItemsOrders,
+    PasswordReset,
+    Product,
 )
 
 
@@ -145,3 +146,52 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ["id", "name", "price", "created_at"]
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
+    class Meta:
+        fields = ["email"]
+
+
+class ActuallyResetPasswordSerializer(serializers.ModelSerializer):
+    new_password = serializers.RegexField(
+        regex=r"^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$",
+        write_only=True,
+        error_messages={
+            "invalid": (
+                "Password must be at least 8 characters long with at least one capital letter and symbol"
+            )
+        },
+    )
+    confirm_password = serializers.CharField(write_only=True, required=True)
+    token = serializers.CharField(write_only=True, required=True)
+
+    def validate(self, attrs):
+        if attrs["new_password"] != attrs["confirm_password"]:
+            raise serializers.ValidationError("Passwords do not match")
+        return attrs
+
+    def create(self, validated_data):
+        try:
+            found_token_obj = PasswordReset.objects.filter(
+                reset_code=validated_data["token"]
+            ).first()
+            user = Users.objects.get(email=found_token_obj.user)
+            if user:
+                user.set_password(validated_data["new_password"])
+                user.save()
+
+                found_token_obj.delete()
+            else:
+                raise serializers.ValidationError({"error": "No User found"})
+        except PasswordReset.DoesNotExist:
+            raise serializers.ValidationError(
+                {"error": "Password reset token is invalid"}
+            )
+        return {"message": "Password reset done!"}
+
+    class Meta:
+        model = PasswordReset
+        fields = ["new_password", "confirm_password", "token"]
