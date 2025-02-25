@@ -79,6 +79,25 @@ class OrdersList(generics.CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user_id=self.request.user, status="Pending")
 
+        if serializer.is_valid():
+            user = Users.objects.get(id=self.request.user.id)
+            items = serializer.validated_data["items"]
+            item_support_list = []
+            for item in items:
+                item_support_list.append(f'Item: {item["item_id"]}, Quantity: {item["quantity"]}\n')
+            items_string = ''.join(item_support_list)
+
+            if user:
+                send_mail(
+                    subject=f"Order Confirmation {serializer.data['id']}",
+                    message=f"Your Order Id is: {serializer.data['id']} \n\n\n"
+                            f"The items are: {items_string}\n\n",
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[user.email],
+                    fail_silently=False,
+                )
+
+
 
 class OrderDetail(generics.RetrieveDestroyAPIView):
     queryset = Orders.objects.all()
