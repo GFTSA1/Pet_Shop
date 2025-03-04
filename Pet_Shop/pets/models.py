@@ -60,8 +60,14 @@ class Orders(models.Model):
 
 
 class FavouriteItems(models.Model):
+    Like = (
+        0,
+        1,
+    )
+
     user_id = models.ForeignKey("pets.Users", on_delete=models.DO_NOTHING)
     item_id = models.ForeignKey("pets.Items", on_delete=models.DO_NOTHING)
+    direction_of_like = models.IntegerField(default=0)
 
     class Meta:
         unique_together = ("user_id", "item_id")
@@ -71,18 +77,6 @@ class ItemsOrders(models.Model):
     item_id = models.ForeignKey("pets.Items", on_delete=models.DO_NOTHING)
     order_id = models.ForeignKey("pets.Orders", on_delete=models.CASCADE)
     quantity = models.IntegerField()
-
-
-from django.db import models
-
-
-class Product(models.Model):
-    name = models.CharField(max_length=255)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.name
 
 
 class PasswordReset(models.Model):

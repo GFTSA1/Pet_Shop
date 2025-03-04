@@ -50,7 +50,7 @@ else:
 SECRET_KEY = f'{os.getenv("SECRET_KEY")}'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG')
 
 ALLOWED_HOSTS = [
     "0.0.0.0",
@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "Pet_Shop.pets.apps.PetsConfig",
+    "corsheaders",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

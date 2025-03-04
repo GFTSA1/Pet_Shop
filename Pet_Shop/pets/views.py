@@ -15,7 +15,7 @@ from .serializers import (
     OrdersSerializer,
     AllOrdersOfUser,
     ResetPasswordSerializer,
-    ActuallyResetPasswordSerializer,
+    ActuallyResetPasswordSerializer, FavouriteItemsSerializer,
 )
 
 import os
@@ -174,3 +174,11 @@ class ActuallyResetPassword(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({"message": "Password reset done!"})
+
+
+class FavouriteItems(generics.CreateAPIView):
+    serializer_class = FavouriteItemsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user_id=self.request.user)

@@ -15,6 +15,7 @@ urlpatterns = [
     path("users/<int:pk>/orders/", views.AllOrdersOfUser.as_view()),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("users/check_email/", views.check_user_email),
+    path('items/like/<int:pk>/', views.FavouriteItems.as_view()),
     path(
         "api/schema/swagger-ui/",
         SpectacularSwaggerView.as_view(url_name="schema"),

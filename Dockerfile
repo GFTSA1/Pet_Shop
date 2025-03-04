@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM python:3.12
 
 WORKDIR /app
 
@@ -6,10 +6,14 @@ COPY requirements.txt requirements.txt
 
 # Устанавливаем SQLite и необходимые зависимости
 RUN apt-get update && apt-get install -y \
-    sqlite3 \
+    python3-dev \
+    libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
+
 RUN pip install --no-cache-dir -r requirements.txt
+
+
 
 COPY . .
 

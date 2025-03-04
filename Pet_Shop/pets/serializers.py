@@ -7,7 +7,6 @@ from Pet_Shop.pets.models import (
     FavouriteItems,
     ItemsOrders,
     PasswordReset,
-    Product,
 )
 
 
@@ -52,12 +51,6 @@ class UsersSerializer(serializers.ModelSerializer):
             "password_confirm",
             "first_name",
         ]
-
-
-class FavouriteItemsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FavouriteItems
-        fields = "__all__"
 
 
 class OrdersItemSerializer(serializers.ModelSerializer):
@@ -142,12 +135,6 @@ class AllOrdersOfUser(serializers.ModelSerializer):
         fields = ["id", "status", "created_at", "item_id"]
 
 
-class ProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product
-        fields = ["id", "name", "price", "created_at"]
-
-
 class ResetPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
 
@@ -195,3 +182,20 @@ class ActuallyResetPasswordSerializer(serializers.ModelSerializer):
     class Meta:
         model = PasswordReset
         fields = ["new_password", "confirm_password", "token"]
+
+
+class FavouriteItemsSerializer(serializers.ModelSerializer):
+    user = UsersSerializer(read_only=True)
+    item = ItemForUserSerializer(read_only=True, source="item_id")
+    direction_of_like = serializers.ChoiceField(choices=FavouriteItems.Like, default=1)
+
+    def create(self, validated_data):
+        user_has_liked_item = FavouriteItems.objects.filter(user_id=validated_data["user_id"]).filter(item_id=validated_data["item_id"])
+        if user_has_liked_item:
+            raise serializers.ValidationError({"error": "You have already liked this item"})
+        item = FavouriteItems.objects.create(**validated_data)
+        return item
+
+    class Meta:
+        model = FavouriteItems
+        fields = ['user', 'item', 'direction_of_like']
