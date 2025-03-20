@@ -4,7 +4,6 @@ WORKDIR /app
 
 COPY requirements.txt requirements.txt
 
-# Устанавливаем SQLite и необходимые зависимости
 RUN apt-get update && apt-get install -y \
     python3-dev \
     libpq-dev \
@@ -17,7 +16,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Переменные для БД, но SQLite будет работать без них
+
 ENV DATABASE_NAME=pets_shop
 ENV DATABASE_USER=postgres
 ENV DATABASE_PASSWORD=1939

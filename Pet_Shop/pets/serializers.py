@@ -190,12 +190,16 @@ class FavouriteItemsSerializer(serializers.ModelSerializer):
     direction_of_like = serializers.ChoiceField(choices=FavouriteItems.Like, default=1)
 
     def create(self, validated_data):
-        user_has_liked_item = FavouriteItems.objects.filter(user_id=validated_data["user_id"]).filter(item_id=validated_data["item_id"])
+        user_has_liked_item = FavouriteItems.objects.filter(
+            user_id=validated_data["user_id"]
+        ).filter(item_id=validated_data["item_id"])
         if user_has_liked_item:
-            raise serializers.ValidationError({"error": "You have already liked this item"})
+            raise serializers.ValidationError(
+                {"error": "You have already liked this item"}
+            )
         item = FavouriteItems.objects.create(**validated_data)
         return item
 
     class Meta:
         model = FavouriteItems
-        fields = ['user', 'item', 'direction_of_like']
+        fields = ["user", "item", "direction_of_like"]

@@ -15,7 +15,8 @@ from .serializers import (
     OrdersSerializer,
     AllOrdersOfUser,
     ResetPasswordSerializer,
-    ActuallyResetPasswordSerializer, FavouriteItemsSerializer,
+    ActuallyResetPasswordSerializer,
+    FavouriteItemsSerializer,
 )
 
 import os
@@ -84,19 +85,20 @@ class OrdersList(generics.CreateAPIView):
             items = serializer.validated_data["items"]
             item_support_list = []
             for item in items:
-                item_support_list.append(f'Item: {item["item_id"]}, Quantity: {item["quantity"]}\n')
-            items_string = ''.join(item_support_list)
+                item_support_list.append(
+                    f"Item: {item['item_id']}, Quantity: {item['quantity']}\n"
+                )
+            items_string = "".join(item_support_list)
 
             if user:
                 send_mail(
                     subject=f"Order Confirmation {serializer.data['id']}",
                     message=f"Your Order Id is: {serializer.data['id']} \n\n\n"
-                            f"The items are: {items_string}\n\n",
+                    f"The items are: {items_string}\n\n",
                     from_email=settings.EMAIL_HOST_USER,
                     recipient_list=[user.email],
                     fail_silently=False,
                 )
-
 
 
 class OrderDetail(generics.RetrieveDestroyAPIView):

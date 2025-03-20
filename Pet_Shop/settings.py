@@ -19,38 +19,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 load_dotenv()
-
-USE_SQLITE = os.getenv("USE_SQLITE", "false").lower() == "true"
-
-if USE_SQLITE:
-    print("Using SQLite database")
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-        }
-    }
-else:
-    print("Using PostgreSQL database")
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.getenv("DATABASE_NAME"),
-            "USER": os.getenv("DATABASE_USER"),
-            "PASSWORD": os.getenv("DATABASE_PASSWORD"),
-            "HOST": os.getenv("DATABASE_HOST"),
-            "PORT": os.getenv("DATABASE_PORT"),
-        }
-    }
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = f'{os.getenv("SECRET_KEY")}'
+SECRET_KEY = f"{os.getenv('SECRET_KEY')}"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG')
+DEBUG = os.getenv("DEBUG")
 
 ALLOWED_HOSTS = [
     "0.0.0.0",
@@ -83,6 +59,7 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -93,6 +70,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "Pet_Shop.urls"
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 TEMPLATES = [
     {
@@ -190,9 +169,9 @@ AUTHENTICATION_BACKENDS = [
 ]
 SOCIALACCOUNT_PROVIDERS = {}
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = f'{os.getenv("EMAIL_HOST_USER")}'
-EMAIL_HOST_PASSWORD = f'{os.getenv("EMAIL_HOST_PASSWORD")}'
+EMAIL_HOST_USER = f"{os.getenv('EMAIL_HOST_USER')}"
+EMAIL_HOST_PASSWORD = f"{os.getenv('EMAIL_HOST_PASSWORD')}"
