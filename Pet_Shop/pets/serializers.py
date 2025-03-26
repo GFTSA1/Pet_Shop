@@ -1,4 +1,12 @@
+import re
+from typing import Dict, Any
+
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import (
+    TokenObtainSerializer,
+    TokenObtainPairSerializer,
+)
+
 from Pet_Shop.pets.models import (
     Items,
     Users,
@@ -7,6 +15,13 @@ from Pet_Shop.pets.models import (
     FavouriteItems,
     ItemsOrders,
     PasswordReset,
+)
+
+email_pattern = (
+    r"^(?!.*\.\.)[a-zA-Z0-9._-]{1,63}[a-zA-Z0-9]@[a-zA-Z0-9.-]{1,255}\.[a-zA-Z]{2,63}$"
+)
+password_pattern = (
+    r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$"
 )
 
 
@@ -27,17 +42,32 @@ class UsersSerializer(serializers.ModelSerializer):
     password_confirm = serializers.CharField(write_only=True)
     first_name = serializers.CharField(required=False)
 
+    def validate(self, attrs):
+        email = attrs["email"]
+        password = attrs.get("password")
+        password_confirm = attrs.get("password_confirm")
+        if email:
+            if not re.fullmatch(email_pattern, email):
+                raise serializers.ValidationError({"email_error": "Invalid email"})
+        if password:
+            if password != password_confirm:
+                raise serializers.ValidationError(
+                    {"password_error": "Passwords do not match"}
+                )
+            if not re.fullmatch(password_pattern, password):
+                raise serializers.ValidationError(
+                    {
+                        "password_error": "Password must be at least 8 characters long, have one special character, one upper case letter, one number, and one lower case letter"
+                    }
+                )
+        return attrs
+
     def create(self, validated_data):
-        password = validated_data.pop("password")
-        second_password = validated_data.pop("password_confirm")
+        validated_data.pop("password_confirm")
         user = Users.objects.create(**validated_data)
         if validated_data.get("first_name") is None:
             user.first_name = user.email.split("@")[0]
-
-        if password:
-            if password != second_password:
-                raise serializers.ValidationError("Passwords do not match")
-            user.set_password(password)
+        user.set_password(validated_data.get("password"))
         user.save()
         return user
 
@@ -65,6 +95,27 @@ class OrdersSerializer(serializers.ModelSerializer):
     status = serializers.ChoiceField(
         choices=Orders.choices_for_order, default="Pending"
     )
+
+    def validate(self, attrs):
+        post_departament = attrs["post_departament"]
+        post_city = attrs["post_city"]
+        user_number = attrs["user_number"]
+
+        if user_number == 0 or user_number is None:
+            raise serializers.ValidationError(
+                {"user_number_error": "Invalid user_number"}
+            )
+        if post_city is None or post_city.strip() == "" or post_city == "N/A":
+            raise serializers.ValidationError({"post_city_error": "Invalid post_city"})
+        if (
+            post_departament is None
+            or post_departament.strip() == ""
+            or post_departament == "N/A"
+        ):
+            raise serializers.ValidationError(
+                {"post_departament_error": "Invalid post_departament"}
+            )
+        return attrs
 
     def create(self, validated_data):
         items_data = validated_data.pop("items")
@@ -203,3 +254,11 @@ class FavouriteItemsSerializer(serializers.ModelSerializer):
     class Meta:
         model = FavouriteItems
         fields = ["user", "item", "direction_of_like"]
+
+
+class CustomTokenSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        data['first_name'] = self.user.first_name
+        return data

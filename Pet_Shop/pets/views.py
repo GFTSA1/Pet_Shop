@@ -17,6 +17,7 @@ from .serializers import (
     ResetPasswordSerializer,
     ActuallyResetPasswordSerializer,
     FavouriteItemsSerializer,
+    CustomTokenSerializer
 )
 
 import os
@@ -126,7 +127,7 @@ class AllOrdersOfUser(generics.ListAPIView):
 
 
 class CustomAPIToken(TokenObtainPairView):
-    serializer_class = TokenObtainPairSerializer
+    serializer_class = CustomTokenSerializer
 
 
 @api_view(["POST"])
