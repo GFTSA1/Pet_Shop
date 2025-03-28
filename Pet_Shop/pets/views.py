@@ -1,13 +1,14 @@
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import send_mail
+from django_filters.rest_framework import DjangoFilterBackend
 
-from rest_framework import generics, permissions, mixins
+from rest_framework import generics, permissions, mixins, filters
 from rest_framework.response import Response
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.decorators import api_view
+from .filters import ItemsFilter
 
-from .models import Items, Users, Orders, ItemsOrders, PasswordReset
+from .models import Items, Users, Orders, PasswordReset, Category
 from .permissions import IsThisUser, IsOwner
 from .serializers import (
     ItemsSerializer,
@@ -17,7 +18,8 @@ from .serializers import (
     ResetPasswordSerializer,
     ActuallyResetPasswordSerializer,
     FavouriteItemsSerializer,
-    CustomTokenSerializer
+    CustomTokenSerializer,
+    CategorySerializer,
 )
 
 import os
@@ -32,6 +34,14 @@ class ItemView(
 ):
     queryset = Items.objects.all()
     serializer_class = ItemsSerializer
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
+    filterset_class = ItemsFilter
+    search_fields = ["title", "description"]
+    ordering_fields = ["price"]
 
     def get_permissions(self):
         if self.request.method == "POST":
@@ -43,6 +53,13 @@ class ItemView(
 
     def post(self, requset, *args, **kwargs):
         return self.create(requset, *args, **kwargs)
+
+
+class CategoryView(
+    generics.ListAPIView,
+):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
 
 
 class ItemDetail(generics.RetrieveAPIView):

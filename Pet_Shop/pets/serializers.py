@@ -260,5 +260,5 @@ class CustomTokenSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
 
-        data['first_name'] = self.user.first_name
+        data["first_name"] = self.user.first_name
         return data

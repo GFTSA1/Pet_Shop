@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -8,6 +8,7 @@ from drf_spectacular.views import SpectacularSwaggerView, SpectacularAPIView
 urlpatterns = [
     path("items/", views.ItemView.as_view()),
     path("items/<int:pk>/", views.ItemDetail.as_view()),
+    path("categories/", views.CategoryView.as_view()),
     path("users/", views.UsersList.as_view()),
     path("users/<int:pk>/", views.UserDetail.as_view()),
     path("orders/", views.OrdersList.as_view()),
