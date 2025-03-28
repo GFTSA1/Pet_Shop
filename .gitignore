@@ -2,7 +2,7 @@
 .env
 .idea/
 __pycache__
+/node_modules/
+.husky/
 package-lock.json
 package.json
-node_modules/
-.husky/

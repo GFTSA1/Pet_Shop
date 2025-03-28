@@ -1,2 +1,0 @@
-# Run ruff check on all staged Python files
-ruff format .
