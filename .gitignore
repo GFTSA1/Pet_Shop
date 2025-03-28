@@ -4,5 +4,5 @@
 __pycache__
 package-lock.json
 package.json
-node_modules
-.husky
+node_modules/
+.husky/
