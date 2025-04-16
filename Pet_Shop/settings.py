@@ -26,7 +26,7 @@ load_dotenv()
 SECRET_KEY = f"{os.getenv('SECRET_KEY')}"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG")
+DEBUG = False
 
 ALLOWED_HOSTS = [
     "0.0.0.0",
@@ -74,7 +74,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = "Pet_Shop.urls"
 
 CORS_ALLOW_ALL_ORIGINS = True
-
+CSRF_TRUSTED_ORIGINS = ['https://gfts.website']
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",

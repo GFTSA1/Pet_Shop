@@ -2,7 +2,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import send_mail
 from django_filters.rest_framework import DjangoFilterBackend
 
-from rest_framework import generics, permissions, mixins, filters
+from rest_framework import generics, permissions, mixins, filters, status
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.decorators import api_view
@@ -51,15 +51,43 @@ class ItemView(
     def get(self, requset, *args, **kwargs):
         return self.list(requset, *args, **kwargs)
 
-    def post(self, requset, *args, **kwargs):
-        return self.create(requset, *args, **kwargs)
+    def post(self, request, *args, **kwargs):
+        is_many = isinstance(request.data, list)
+
+        serializer = self.get_serializer(data=request.data, many=is_many)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class CategoryView(
-    generics.ListAPIView,
+    generics.GenericAPIView,
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
 ):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [permissions.IsAdminUser()]
+        return [permissions.IsAuthenticatedOrReadOnly()]
+
+    def get(self, requset, *args, **kwargs):
+        return self.list(requset, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        is_many = isinstance(request.data, list)
+
+        serializer = self.get_serializer(data=request.data, many=is_many)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 
 
 class ItemDetail(generics.RetrieveAPIView):
@@ -164,8 +192,9 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         email = request.data["email"]
 
-        user = Users.objects.get(email=email)
-        if user:
+
+        try:
+            user = Users.objects.get(email=email)
             token_generator = PasswordResetTokenGenerator()
             token = token_generator.make_token(user)
             reset = PasswordReset(user=email, reset_code=token)
@@ -181,8 +210,8 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
                 fail_silently=False,
             )
             return Response({"Email sent"})
-        else:
-            return Response({"User with this email does not exist!"})
+        except:
+            return Response({'error': 'User not found'}, status=400)
 
 
 class ActuallyResetPassword(generics.CreateAPIView):

@@ -19,7 +19,7 @@ email_pattern = (
     r"^(?!.*\.\.)[a-zA-Z0-9._-]{1,63}[a-zA-Z0-9]@[a-zA-Z0-9.-]{1,255}\.[a-zA-Z]{2,63}$"
 )
 password_pattern = (
-    r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$"
+    r"^(?=.*[A-Z])(?=.*[a-z])[A-Za-z\d!@#$%^&*]{8,100}$"
 )
 
 
@@ -193,7 +193,7 @@ class ResetPasswordSerializer(serializers.Serializer):
 
 class ActuallyResetPasswordSerializer(serializers.ModelSerializer):
     new_password = serializers.RegexField(
-        regex=r"^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$",
+        regex=r"^(?=.*[A-Z])(?=.*[a-z])[A-Za-z\d!@#$%^&*]{8,100}$",
         write_only=True,
         error_messages={
             "invalid": (
