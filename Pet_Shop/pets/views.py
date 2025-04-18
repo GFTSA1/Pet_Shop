@@ -59,7 +59,9 @@ class ItemView(
         self.perform_create(serializer)
 
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
 
 
 class CategoryView(
@@ -86,8 +88,9 @@ class CategoryView(
         self.perform_create(serializer)
 
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
 
 
 class ItemDetail(generics.RetrieveAPIView):
@@ -192,7 +195,6 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         email = request.data["email"]
 
-
         try:
             user = Users.objects.get(email=email)
             token_generator = PasswordResetTokenGenerator()
@@ -211,7 +213,7 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
             )
             return Response({"Email sent"})
         except:
-            return Response({'error': 'User not found'}, status=400)
+            return Response({"error": "User not found"}, status=400)
 
 
 class ActuallyResetPassword(generics.CreateAPIView):

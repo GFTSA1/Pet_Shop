@@ -18,9 +18,7 @@ from Pet_Shop.pets.models import (
 email_pattern = (
     r"^(?!.*\.\.)[a-zA-Z0-9._-]{1,63}[a-zA-Z0-9]@[a-zA-Z0-9.-]{1,255}\.[a-zA-Z]{2,63}$"
 )
-password_pattern = (
-    r"^(?=.*[A-Z])(?=.*[a-z])[A-Za-z\d!@#$%^&*]{8,100}$"
-)
+password_pattern = r"^(?=.*[A-Z])(?=.*[a-z])[A-Za-z\d!@#$%^&*.]{8,100}$"
 
 
 class ItemsSerializer(serializers.ModelSerializer):

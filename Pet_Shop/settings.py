@@ -74,7 +74,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = "Pet_Shop.urls"
 
 CORS_ALLOW_ALL_ORIGINS = True
-CSRF_TRUSTED_ORIGINS = ['https://gfts.website']
+CSRF_TRUSTED_ORIGINS = ["https://gfts.website"]
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
