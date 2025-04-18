@@ -15,9 +15,7 @@ from Pet_Shop.pets.models import (
     PasswordReset,
 )
 
-email_pattern = (
-    r"^(?!.*\.\.)[a-zA-Z0-9._-]{1,63}[a-zA-Z0-9]@[a-zA-Z0-9.-]{1,255}\.[a-zA-Z]{2,63}$"
-)
+email_pattern = r"^(?!.*\.\.)([a-zA-Z0-9](?:[a-zA-Z0-9._-]{0,61}[a-zA-Z0-9])?)@[a-zA-Z0-9.-]{1,255}\.[a-zA-Z]{2,63}$"
 password_pattern = r"^(?=.*[A-Z])(?=.*[a-z])[A-Za-z\d!@#$%^&*.]{8,100}$"
 
 
@@ -80,6 +78,25 @@ class UsersSerializer(serializers.ModelSerializer):
 
 
 class OrdersItemSerializer(serializers.ModelSerializer):
+    def to_internal_value(self, data):
+        quantity = data["quantity"]
+
+        if type(quantity) is not int:
+            raise serializers.ValidationError(
+                {"quantity_error": "Quantity must be an integer"}
+            )
+        return super().to_internal_value(data)
+
+    def validate(self, attrs):
+        quantity = attrs["quantity"]
+
+        if quantity <= 0:
+            raise serializers.ValidationError(
+                {"quantity": "Quantity must be greater than 0"}
+            )
+        return attrs
+
+
     class Meta:
         model = ItemsOrders
         fields = ["item_id", "quantity"]
@@ -92,6 +109,20 @@ class OrdersSerializer(serializers.ModelSerializer):
         choices=Orders.choices_for_order, default="Pending"
     )
 
+    def to_internal_value(self, data):
+        post_city = data.get("post_city")
+        post_departament = data.get("post_departament")
+        user_number = data.get("user_number")
+
+        if type(post_city) is not str:
+            raise serializers.ValidationError({"post_city": "Must be a string."})
+        if type(post_departament) is not str:
+            raise serializers.ValidationError({"post_departament": "Must be a string."})
+        if type(user_number) is not int:
+            raise serializers.ValidationError({"user_number": "Must be a number."})
+
+        return super().to_internal_value(data)
+
     def validate(self, attrs):
         post_departament = attrs["post_departament"]
         post_city = attrs["post_city"]
@@ -101,12 +132,18 @@ class OrdersSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {"user_number_error": "Invalid user_number"}
             )
-        if post_city is None or post_city.strip() == "" or post_city == "N/A":
+        if (
+            post_city is None
+            or post_city.strip() == ""
+            or post_city == "N/A"
+            or type(post_city) is not str
+        ):
             raise serializers.ValidationError({"post_city_error": "Invalid post_city"})
         if (
             post_departament is None
             or post_departament.strip() == ""
             or post_departament == "N/A"
+            or type(post_departament) is not str
         ):
             raise serializers.ValidationError(
                 {"post_departament_error": "Invalid post_departament"}
