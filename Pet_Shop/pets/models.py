@@ -68,8 +68,8 @@ class FavouriteItems(models.Model):
         1,
     )
 
-    user_id = models.ForeignKey("pets.Users", on_delete=models.DO_NOTHING)
-    item_id = models.ForeignKey("pets.Items", on_delete=models.DO_NOTHING)
+    user_id = models.ForeignKey("pets.Users", on_delete=models.CASCADE)
+    item_id = models.ForeignKey("pets.Items", on_delete=models.CASCADE)
     direction_of_like = models.IntegerField(default=0)
 
     class Meta:
@@ -77,7 +77,7 @@ class FavouriteItems(models.Model):
 
 
 class ItemsOrders(models.Model):
-    item_id = models.ForeignKey("pets.Items", on_delete=models.DO_NOTHING)
+    item_id = models.ForeignKey("pets.Items", on_delete=models.CASCADE)
     order_id = models.ForeignKey("pets.Orders", on_delete=models.CASCADE)
     quantity = models.IntegerField()
 

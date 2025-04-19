@@ -96,7 +96,6 @@ class OrdersItemSerializer(serializers.ModelSerializer):
             )
         return attrs
 
-
     class Meta:
         model = ItemsOrders
         fields = ["item_id", "quantity"]
