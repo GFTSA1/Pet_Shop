@@ -44,7 +44,7 @@ class ItemView(
     ordering_fields = ["price"]
 
     def get_permissions(self):
-        if self.request.method == "POST":
+        if self.request.method == "POST" or self.request.method == "PUT" or self.request.method == "PATCH" or self.request.method == "DELETE":
             return [permissions.IsAdminUser()]
         return [permissions.IsAuthenticatedOrReadOnly()]
 
@@ -93,9 +93,30 @@ class CategoryView(
         )
 
 
-class ItemDetail(generics.RetrieveAPIView):
+class ItemDetail(generics.GenericAPIView,
+                 mixins.RetrieveModelMixin,
+                 mixins.UpdateModelMixin,
+                 mixins.DestroyModelMixin,
+                 ):
     queryset = Items.objects.all()
     serializer_class = ItemsSerializer
+
+    def get_permissions(self):
+        if self.request.method == "POST" or self.request.method == "PUT" or self.request.method == "PATCH" or self.request.method == "DELETE":
+            return [permissions.IsAdminUser()]
+        return [permissions.IsAuthenticatedOrReadOnly()]
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
 
 
 class UsersList(generics.ListAPIView):

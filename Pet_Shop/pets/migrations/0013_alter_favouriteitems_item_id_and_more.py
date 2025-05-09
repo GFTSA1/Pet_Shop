@@ -6,25 +6,30 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pets', '0012_orders_post_city_orders_post_departament_and_more'),
+        ("pets", "0012_orders_post_city_orders_post_departament_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='favouriteitems',
-            name='item_id',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='pets.items'),
+            model_name="favouriteitems",
+            name="item_id",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="pets.items"
+            ),
         ),
         migrations.AlterField(
-            model_name='favouriteitems',
-            name='user_id',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="favouriteitems",
+            name="user_id",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AlterField(
-            model_name='itemsorders',
-            name='item_id',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='pets.items'),
+            model_name="itemsorders",
+            name="item_id",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="pets.items"
+            ),
         ),
     ]
