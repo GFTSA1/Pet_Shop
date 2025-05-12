@@ -20,6 +20,13 @@ password_pattern = r"^(?=.*[A-Z])(?=.*[a-z])[A-Za-z\d!@#$%^&*.]{8,100}$"
 
 
 class ItemsSerializer(serializers.ModelSerializer):
+    def validate(self, data):
+        img_url = data.get("image")
+        if not img_url.startswith("https://petshopbucketa1.s3.us-east-1.amazonaws.com/"):
+            raise serializers.ValidationError({'image_error': 'wrong image url'})
+        return data
+
+
     class Meta:
         model = Items
         fields = "__all__"
