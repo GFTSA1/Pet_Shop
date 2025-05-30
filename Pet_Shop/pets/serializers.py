@@ -28,7 +28,9 @@ class ItemsSerializer(serializers.ModelSerializer):
         ):
             raise serializers.ValidationError({"image_error": "wrong image url"})
         if price <= 0:
-            raise serializers.ValidationError({"price_error": "price must be greater than 0"})
+            raise serializers.ValidationError(
+                {"price_error": "price must be greater than 0"}
+            )
         return data
 
     class Meta:

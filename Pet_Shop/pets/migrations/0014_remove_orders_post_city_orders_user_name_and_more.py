@@ -4,24 +4,23 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pets', '0013_alter_favouriteitems_item_id_and_more'),
+        ("pets", "0013_alter_favouriteitems_item_id_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='orders',
-            name='post_city',
+            model_name="orders",
+            name="post_city",
         ),
         migrations.AddField(
-            model_name='orders',
-            name='user_name',
-            field=models.CharField(default='N/A', max_length=255),
+            model_name="orders",
+            name="user_name",
+            field=models.CharField(default="N/A", max_length=255),
         ),
         migrations.AddField(
-            model_name='orders',
-            name='user_surname',
-            field=models.CharField(default='N/A', max_length=255),
+            model_name="orders",
+            name="user_surname",
+            field=models.CharField(default="N/A", max_length=255),
         ),
     ]

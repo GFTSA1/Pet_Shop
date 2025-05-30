@@ -62,6 +62,7 @@ class Orders(models.Model):
     user_name = models.CharField(max_length=255, default="N/A")
     user_surname = models.CharField(max_length=255, default="N/A")
 
+
 class FavouriteItems(models.Model):
     Like = (
         0,
