@@ -57,10 +57,10 @@ class Orders(models.Model):
     status = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     user_id = models.ForeignKey("pets.Users", on_delete=models.DO_NOTHING)
-    post_city = models.CharField(max_length=255, default="N/A")
     post_departament = models.CharField(max_length=255, default="N/A")
     user_number = models.IntegerField(default=0)
-
+    user_name = models.CharField(max_length=255, default="N/A")
+    user_surname = models.CharField(max_length=255, default="N/A")
 
 class FavouriteItems(models.Model):
     Like = (

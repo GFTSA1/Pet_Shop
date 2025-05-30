@@ -22,10 +22,13 @@ password_pattern = r"^(?=.*[A-Z])(?=.*[a-z])[A-Za-z\d!@#$%^&*.]{8,100}$"
 class ItemsSerializer(serializers.ModelSerializer):
     def validate(self, data):
         img_url = data.get("image")
+        price = data.get("price")
         if not img_url.startswith(
             "https://petshopbucketa1.s3.us-east-1.amazonaws.com/"
         ):
             raise serializers.ValidationError({"image_error": "wrong image url"})
+        if price <= 0:
+            raise serializers.ValidationError({"price_error": "price must be greater than 0"})
         return data
 
     class Meta:
@@ -117,12 +120,9 @@ class OrdersSerializer(serializers.ModelSerializer):
     )
 
     def to_internal_value(self, data):
-        post_city = data.get("post_city")
         post_departament = data.get("post_departament")
         user_number = data.get("user_number")
 
-        if type(post_city) is not str:
-            raise serializers.ValidationError({"post_city": "Must be a string."})
         if type(post_departament) is not str:
             raise serializers.ValidationError({"post_departament": "Must be a string."})
         if type(user_number) is not int:
@@ -132,20 +132,12 @@ class OrdersSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         post_departament = attrs["post_departament"]
-        post_city = attrs["post_city"]
         user_number = attrs["user_number"]
 
         if user_number == 0 or user_number is None:
             raise serializers.ValidationError(
                 {"user_number_error": "Invalid user_number"}
             )
-        if (
-            post_city is None
-            or post_city.strip() == ""
-            or post_city == "N/A"
-            or type(post_city) is not str
-        ):
-            raise serializers.ValidationError({"post_city_error": "Invalid post_city"})
         if (
             post_departament is None
             or post_departament.strip() == ""
