@@ -12,6 +12,7 @@ from .models import Items, Users, Orders, PasswordReset, Category
 from .permissions import IsThisUser, IsOwner
 from .serializers import (
     ItemsSerializer,
+    UsersSerializerCreation,
     UsersSerializer,
     OrdersSerializer,
     AllOrdersOfUser,
@@ -132,19 +133,22 @@ class ItemDetail(
 
 class UsersList(generics.ListAPIView):
     queryset = Users.objects.all()
-    serializer_class = UsersSerializer
+    serializer_class = UsersSerializerCreation
     permission_classes = [permissions.IsAdminUser]
 
 
-class UserListRegister(generics.CreateAPIView):
+class UserRegister(generics.CreateAPIView):
     queryset = Users.objects.all()
-    serializer_class = UsersSerializer
+    serializer_class = UsersSerializerCreation
 
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Users.objects.all()
     serializer_class = UsersSerializer
     permission_classes = [permissions.IsAuthenticated, IsThisUser]
+
+    def get_object(self):
+        return self.request.user
 
 
 class AllOrdersList(generics.ListAPIView):

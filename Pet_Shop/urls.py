@@ -22,7 +22,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 from Pet_Shop.pets.views import (
     CustomAPIToken,
-    UserListRegister,
+    UserRegister,
     RequestPasswordResetEmail,
     ActuallyResetPassword,
 )
@@ -30,7 +30,7 @@ from Pet_Shop.pets.views import (
 urlpatterns = [
     path("login/", CustomAPIToken.as_view()),
     path("refresh/", TokenRefreshView.as_view()),
-    path("register/", UserListRegister.as_view()),
+    path("register/", UserRegister.as_view()),
     path("", include("Pet_Shop.pets.urls")),
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),

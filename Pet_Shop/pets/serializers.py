@@ -44,7 +44,7 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class UsersSerializer(serializers.ModelSerializer):
+class UsersSerializerCreation(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     password_confirm = serializers.CharField(write_only=True)
     first_name = serializers.CharField(required=False)
@@ -88,6 +88,40 @@ class UsersSerializer(serializers.ModelSerializer):
             "password_confirm",
             "first_name",
         ]
+
+
+class UsersSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = Users
+        fields = [
+            "email",
+            "created_at",
+            "password",
+            "first_name",
+        ]
+
+    def validate(self, data):
+        user = self.context["request"].user
+        if data.get("password") is None:
+            raise serializers.ValidationError(
+                {"password_error": "There is no password"}
+            )
+        if not user.check_password(data["password"]):
+            raise serializers.ValidationError(
+                {"current_password": "Current password is incorrect."}
+            )
+        return data
+
+    def update(self, instance, validated_data):
+        instance.email = validated_data.get("email", instance.email)
+        instance.first_name = validated_data.get("first_name", instance.first_name)
+        instance.logo = validated_data.get("logo", instance.logo)
+        if validated_data.get("password") is not None:
+            instance.set_password(validated_data.get("password"))
+        instance.save()
+        return instance
 
 
 class OrdersItemSerializer(serializers.ModelSerializer):
@@ -270,7 +304,7 @@ class ActuallyResetPasswordSerializer(serializers.ModelSerializer):
 
 
 class FavouriteItemsSerializer(serializers.ModelSerializer):
-    user = UsersSerializer(read_only=True)
+    user = UsersSerializerCreation(read_only=True)
     item = ItemForUserSerializer(read_only=True, source="item_id")
     direction_of_like = serializers.ChoiceField(choices=FavouriteItems.Like, default=1)
 
